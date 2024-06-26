@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 
 public class EmployeeDTO {
 
-	@NotNull(message="employee.id.notpresent")
+	//@NotNull(message="employee.id.notpresent")
     private Integer id;
 	
 	@NotNull(message="employee.name.notpresent")
@@ -18,9 +18,8 @@ public class EmployeeDTO {
 	@Pattern(regexp="[A-Za-z]([A-Za-z]+)*",message="employee.company.invalid")
 	private String company;
 	
-	@NotNull(message="employee.phoneno.notpresent")
-	@Min(value=1111111111l,message="employee.phoneno.invalid")
-	@Max(value=9999999999l,message="employee.phoneno.invalid")
+	
+	
 	private Long phoneNo;
 	
 	@NotNull(message="employee.salary.notpresent")
@@ -31,11 +30,12 @@ public class EmployeeDTO {
 		
 	}
 
-	public EmployeeDTO(@NotNull(message = "employee.id.notpresent") Integer id,
-			@NotNull(message = "employee.name.notpresent") @Pattern(regexp = "[A-Za-z]*", message = "employee.name.invalid") String name,
-			@NotNull(message = "employee.company.notpresent") @Pattern(regexp = "[A-Za-z]*", message = "employee.company.invalid") String company,
-			@NotNull(message = "employee.phoneno.notpresent") @Pattern(regexp = "\\d{10}", message = "employee.phoneno.invalid") Long phoneNo,
-			@NotNull(message = "employee.salary.notpresent") Integer salary) {
+	
+	public EmployeeDTO(Integer id,
+			 String name,
+			 String company,
+			 Long phoneNo,
+			Integer salary) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -43,6 +43,7 @@ public class EmployeeDTO {
 		this.phoneNo = phoneNo;
 		this.salary = salary;
 	}
+
 
 	public Integer getId() {
 		return id;

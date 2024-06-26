@@ -12,8 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.emp.dto.EmployeeDTO;
-import com.emp.entity.Employee;
+import com.emp.entity.EmployeeDTO;
 import com.emp.exception.EmployeeException;
 import com.emp.repo.EmployeeRepository;
 import com.emp.service.EmployeeService;
@@ -21,7 +20,7 @@ import com.emp.service.EmployeeServiceImpl;
 
 
 @SpringBootTest
-class EmployeeBackendApplicationTests {
+class EmployeeDTOBackendApplicationTests {
 
 	@Mock
 	EmployeeRepository employeeRepository;
@@ -36,7 +35,7 @@ class EmployeeBackendApplicationTests {
 	@Test
 	 public void addEmployeeValid() throws EmployeeException {
 		//Employee emps=new Employee(129,"Raja","Hcl",9090009090l,9000);
-		 EmployeeDTO emp = new EmployeeDTO(129,"Raja","Hcl",9090009090l,9000);
+		 com.emp.dto.EmployeeDTO emp = new com.emp.dto.EmployeeDTO(129,"Raja","Hcl",9090009090l,9000);
 			
         Mockito.when(employeeRepository.findById(129)).thenReturn(Optional.of(emps));
           Integer i = employeeService.addEmployee(emp);
@@ -47,9 +46,9 @@ class EmployeeBackendApplicationTests {
 }
 	@Test
 	public void addEmployeeInValid() throws EmployeeException {
-	    EmployeeDTO emp = new EmployeeDTO(2, "Dharani", "Hcl", 9090909090L, 9000);
+	    com.emp.dto.EmployeeDTO emp = new com.emp.dto.EmployeeDTO(2, "Dharani", "Hcl", 9090909090L, 9000);
 
-	    Mockito.when(employeeRepository.findById(2)).thenReturn(Optional.of(new Employee()));
+	    Mockito.when(employeeRepository.findById(2)).thenReturn(Optional.of(new EmployeeDTO(city)));
 
 	    EmployeeException exception = Assertions.assertThrows(EmployeeException.class, () -> {
 	        employeeService.addEmployee(emp);

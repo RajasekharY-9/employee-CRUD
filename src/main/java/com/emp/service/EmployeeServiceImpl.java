@@ -8,8 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.emp.dto.EmployeeDTO;
-import com.emp.entity.Employee;
+import com.emp.entity.EmployeeDTO;
 import com.emp.exception.EmployeeException;
 import com.emp.repo.EmployeeRepository;
 
@@ -23,42 +22,26 @@ public class EmployeeServiceImpl implements EmployeeService {
 	private EmployeeRepository employeeRepository;
 
 	@Override
-	public EmployeeDTO getEmployee(Integer id) throws EmployeeException {
+	public com.emp.dto.EmployeeDTO getEmployee(Integer id) throws EmployeeException {
 
-		Optional<Employee> isExist = employeeRepository.findById(id);
+		Optional<EmployeeDTO> isExist = employeeRepository.findById(id);
 
-		Employee employee = isExist.orElseThrow(() -> new EmployeeException("SERVICE_EMP_NOT_EXISTS"));
-
-		EmployeeDTO emp = new EmployeeDTO();
-
-		emp.setId(employee.getId());
-		emp.setName(employee.getName());
-		emp.setPhoneNo(employee.getPhoneNo());
-		emp.setCompany(employee.getCompany());
-		emp.setSalary(employee.getSalary());
+		EmployeeDTO employee = isExist.orElseThrow(() -> new EmployeeException("SERVICE_EMP_NOT_EXISTS"));
+ com.emp.dto.EmployeeDTO emp= convertoEmpDTO(employee);
 
 		return emp;
 	}
 
 	@Override
-	public List<EmployeeDTO> getAllEmployees() throws EmployeeException {
+	public List<com.emp.dto.EmployeeDTO> getAllEmployees() throws EmployeeException {
 
-		Iterable<Employee> employees = employeeRepository.findAll();
+		Iterable<EmployeeDTO> employees = employeeRepository.findAll();
 
-		List<EmployeeDTO> list = new ArrayList<>();
-
-		employees.forEach(emp -> {
-
-			EmployeeDTO employee = new EmployeeDTO();
-
-			employee.setId(emp.getId());
-			employee.setName(emp.getName());
-			employee.setPhoneNo(emp.getPhoneNo());
-			employee.setCompany(emp.getCompany());
-			employee.setSalary(emp.getSalary());
-
-			list.add(employee);
-		});
+		List<com.emp.dto.EmployeeDTO> list = new ArrayList<>();
+for(EmployeeDTO emp:employees){
+	com.emp.dto.EmployeeDTO e= convertoEmpDTO(emp);
+	list.add(e);
+}
 		if (list.isEmpty()) {
 			throw new EmployeeException("SERVICE_EMP_NOT_EXISTS");
 		}
@@ -67,30 +50,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Integer addEmployee(EmployeeDTO empdto) throws EmployeeException {
-
-		Optional<Employee> isExist = employeeRepository.findById(empdto.getId());
-	if(isExist.isPresent()) {
-		throw new EmployeeException("SERVICE_ALREADY_EXISTS");
-	}
-		
-              	
-		
-		 Employee emp=new Employee();
-		emp.setId(empdto.getId());
-		emp.setName(empdto.getName());
-		emp.setCompany(empdto.getCompany());
-		emp.setPhoneNo(empdto.getPhoneNo());
-		emp.setSalary(empdto.getSalary());
-		employeeRepository.save(emp);
-		return emp.getId();
-
+	public Integer addEmployee(com.emp.dto.EmployeeDTO empdto) throws EmployeeException {
+		Optional<EmployeeDTO> isExist = employeeRepository.findByName(empdto.getName());
+		if (isExist.isPresent()) {
+			throw new EmployeeException("SERVICE_ALREADY_EXISTS");
+		}
+		EmployeeDTO e= employeeRepository.save(convertoEntity(empdto));
+return e.getId();
 	}
 
 	@Override
 	public void deleteEmployee(Integer id) throws EmployeeException {
 
-		Optional<Employee> isExist = employeeRepository.findById(id);
+		Optional<EmployeeDTO> isExist = employeeRepository.findById(id);
 
 		isExist.orElseThrow(() -> new EmployeeException("SERVICE_EMP_NOT_EXISTS"));
 
@@ -99,58 +71,85 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public EmployeeDTO getByName(String name) throws EmployeeException {
-
-		Optional<Employee> emp = employeeRepository.findByName(name);
-		Employee e1=emp.orElseThrow(() -> new EmployeeException("SERVICE_EMP_NOT_EXISTS"));
-
-		EmployeeDTO e=new EmployeeDTO();
-	
-		e.setId(e1.getId());
-		e.setCompany(e1.getCompany());
-		e.setName(e1.getName());
-		e.setPhoneNo(e1.getPhoneNo());
-		e.setSalary(e1.getSalary());
-		
-		
-		return e;
+	public com.emp.dto.EmployeeDTO getByName(String name) throws EmployeeException {
+		Optional<EmployeeDTO> emp = employeeRepository.findByName(name);
+		 emp.orElseThrow(() -> new EmployeeException("SERVICE_EMP_NOT_EXISTS"));
+    com.emp.dto.EmployeeDTO e= convertoEmpDTO(emp.get());
+	return e;
 	}
 
 	@Override
-	public EmployeeDTO getByPhoneNumber(Long phoneNo) throws EmployeeException {
-
-		Optional<Employee> emp = employeeRepository.findByPhoneNo(phoneNo);
-		Employee e1=emp.orElseThrow(() -> new EmployeeException("SERVICE_EMP_NOT_EXISTS"));
-		
-		EmployeeDTO e=new EmployeeDTO();
-		
-		e.setId(e1.getId());
-		e.setCompany(e1.getCompany());
-		e.setName(e1.getName());
-		e.setPhoneNo(e1.getPhoneNo());
-		e.setSalary(e1.getSalary());
-		
+	public com.emp.dto.EmployeeDTO getByPhoneNumber(Long phoneNo) throws EmployeeException {
+		Optional<EmployeeDTO> emp = employeeRepository.findByPhoneNo(phoneNo);
+		 emp.orElseThrow(() -> new EmployeeException("SERVICE_EMP_NOT_EXISTS"));
+	com.emp.dto.EmployeeDTO e= convertoEmpDTO(emp.get());
 		return e;
-		
-		
-		
 	}
 
-	
 
 	@Override
-	public void updateEmployee(Integer id, EmployeeDTO empdto) throws EmployeeException {
-
-		Optional<Employee> emp = employeeRepository.findById(id);
-
-		Employee emps = emp.orElseThrow(() -> new EmployeeException("SERVICE_EMP_NOT_EXISTS"));
-
+	public void updateEmployee(Integer id, com.emp.dto.EmployeeDTO empdto) throws EmployeeException {
+		Optional<EmployeeDTO> emp = employeeRepository.findById(id);
+		EmployeeDTO emps = emp.orElseThrow(() -> new EmployeeException("SERVICE_EMP_NOT_EXISTS"));
 		emps.setCompany(empdto.getCompany());
 		emps.setName(empdto.getName());
-
 		emps.setPhoneNo(empdto.getPhoneNo());
 		emps.setSalary(empdto.getSalary());
+	}
+
+
+	@Override
+	public com.emp.dto.EmployeeDTO getByCompanyAndName(String company, String name) throws EmployeeException {
+		EmployeeDTO emp = employeeRepository.getByCompanyAndName(company, name);
+		if (emp == null) {
+			throw new EmployeeException("Employee Not Found !!!");
+		}
+		com.emp.dto.EmployeeDTO employeeDTO = convertoEmpDTO(emp);
+
+		return employeeDTO;
+	}
+
+	@Override
+	public List<com.emp.dto.EmployeeDTO> getEmployessByAllPhones(Long phoneNo) throws EmployeeException {
+		List<com.emp.dto.EmployeeDTO> employeeDTOS = getEmployessByAllPhones(phoneNo);
+if(employeeDTOS.isEmpty()) {
+	throw new EmployeeException("Employee Not Found !!!");
+}
+List<EmployeeDTO> emps=new ArrayList<>();
+for(com.emp.dto.EmployeeDTO emp:employeeDTOS) {
+	EmployeeDTO e=convertoEntity(emp);
+	emps.add(e);
+}
+List<com.emp.dto.EmployeeDTO> edtos=new ArrayList<>();
+for(EmployeeDTO e:emps) {
+	com.emp.dto.EmployeeDTO edto=convertoEmpDTO(e);
+	edtos.add(edto);
+}
+
+		return edtos;
+	}
+
+	public com.emp.dto.EmployeeDTO convertoEmpDTO(EmployeeDTO emp) {
+		com.emp.dto.EmployeeDTO employeeDTO = new com.emp.dto.EmployeeDTO();
+		employeeDTO.setId(emp.getId());
+		employeeDTO.setName(emp.getName());
+		employeeDTO.setCompany(emp.getCompany());
+		employeeDTO.setPhoneNo(emp.getPhoneNo());
+		employeeDTO.setSalary(emp.getSalary());
+		return employeeDTO;
+
 
 	}
 
+	public EmployeeDTO convertoEntity(com.emp.dto.EmployeeDTO empdto) {
+
+		EmployeeDTO emp = new EmployeeDTO();
+		emp.setId(empdto.getId());
+		emp.setName(empdto.getName());
+		emp.setCompany(empdto.getCompany());
+		emp.setPhoneNo(empdto.getPhoneNo());
+		emp.setSalary(empdto.getSalary());
+		return emp;
+
+	}
 }

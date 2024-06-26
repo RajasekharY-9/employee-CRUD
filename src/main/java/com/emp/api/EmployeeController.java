@@ -19,17 +19,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emp.dto.EmployeeDTO;
-import com.emp.entity.Employee;
 import com.emp.exception.EmployeeException;
 import com.emp.service.EmployeeService;
 
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 
 @RestController
 @Validated
 @RequestMapping("api")
-@CrossOrigin
+@CrossOrigin("http://localhost:3000")
 public class EmployeeController {
 	
 	@Autowired
@@ -39,7 +37,7 @@ public class EmployeeController {
 	private Environment env;
 	
 
-	//
+	//http://localhost:8089/api/emp/get/2
 	@GetMapping("emp/get/{id}")
 	public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Integer id) throws EmployeeException{
 		EmployeeDTO emp=employeeService.getEmployee(id);
@@ -51,7 +49,7 @@ public class EmployeeController {
 	
 	
 		
-	
+	//http://localhost:8089/api/emp/all
 	@GetMapping("emp/all")
 	public ResponseEntity<List<EmployeeDTO>> getAllEmployees()throws EmployeeException{
 		
@@ -61,7 +59,7 @@ public class EmployeeController {
 		return new ResponseEntity<>(em,HttpStatus.OK);
 		
 	}
-	
+	//http://localhost:8089/api/emp/add
 	@PostMapping("/emp/add")
 	public ResponseEntity<String> addEmployee(@RequestBody @Valid EmployeeDTO empdto)throws EmployeeException{
 		
@@ -72,7 +70,7 @@ public class EmployeeController {
 		return new ResponseEntity<>(msg,HttpStatus.CREATED);
 		
 	}
-	
+	//http://localhost:8089/api/emp/del/5
 	@DeleteMapping("/emp/del/{id}")
 	public ResponseEntity<String> deleteEmployee(@PathVariable Integer id)throws EmployeeException{
 		
@@ -84,8 +82,8 @@ String msg=env.getProperty("API_DELETED");
 		
 		
 	}
-	
-	@PutMapping("/emp/{id}/upd")
+	//http://localhost:8089/api/emp/upd/1
+	@PutMapping("/emp/upd/{id}")
 	public ResponseEntity<String> updateEmployee(@PathVariable Integer id,@RequestBody EmployeeDTO emp)throws EmployeeException{
 		employeeService.updateEmployee(id, emp);
 String msg=env.getProperty("API_UPDATED");
@@ -112,7 +110,18 @@ String msg=env.getProperty("API_UPDATED");
 	    
 	}
 
-	
+	@GetMapping("/emp-phone-name/{company}/{name}")
+	public ResponseEntity<EmployeeDTO> getByCompanyAndName(@PathVariable String company,@PathVariable String name) throws EmployeeException{
+		EmployeeDTO e=employeeService.getByCompanyAndName(company, name);
+return new ResponseEntity<>(e,HttpStatus.OK);
+	}
+
+
+	@GetMapping("/emp-phone/{phoneNo}")
+	public ResponseEntity<List<EmployeeDTO>> getEmployessByAllPhones(@PathVariable Long phoneNo) throws EmployeeException{
+		List<EmployeeDTO> emps=employeeService.getEmployessByAllPhones(phoneNo);
+		return new ResponseEntity<>(emps,HttpStatus.OK);
+	}
 	
 	
 	

@@ -3,13 +3,13 @@ package com.emp.service;
 import java.util.List;
 
 import com.emp.dto.EmployeeDTO;
-import com.emp.entity.Employee;
 import com.emp.exception.EmployeeException;
 
 public interface EmployeeService {
 
 	public EmployeeDTO getEmployee(Integer id) throws EmployeeException;
-	
+	public EmployeeDTO getByCompanyAndName(String company, String name) throws EmployeeException;
+	public List<EmployeeDTO> getEmployessByAllPhones(Long phoneNo) throws EmployeeException;
 	
 	public List<EmployeeDTO> getAllEmployees()throws EmployeeException;
 	
