@@ -1,8 +1,9 @@
 package com.emp.service;
 
 import com.emp.dto.CityDTO;
+import com.emp.dto.EmployeeDTO;
 import com.emp.entity.City;
-import com.emp.entity.EmployeeDTO;
+import com.emp.entity.Employee;
 import com.emp.exception.EmployeeException;
 import com.emp.repo.CityRepository;
 import jakarta.transaction.Transactional;
@@ -67,9 +68,9 @@ public class CityServiceImpl implements CityService{
 
     @Override
     public List<com.emp.dto.EmployeeDTO> getByEmployeeByCityId(Integer id) {
-        List<EmployeeDTO> emps = cityRepository.getByEmployee(id);
+        List<Employee> emps = cityRepository.getByEmployee(id);
         List<com.emp.dto.EmployeeDTO> employeeDTOList = new ArrayList<>();
-        for(EmployeeDTO e:emps) {
+        for(Employee e:emps) {
             com.emp.dto.EmployeeDTO employeeDTO = employeeService.convertoEmpDTO(e);
             employeeDTOList.add(employeeDTO);
         }
@@ -87,10 +88,11 @@ c.setCityName(cityDTO.getCityName());
 c.setZipCode(cityDTO.getZipCode());
 c.setState(cityDTO.getState());
 
-        List<EmployeeDTO> employees = new ArrayList<>();
-        for(EmployeeDTO e:cityDTO.getEmployees()){
-            EmployeeDTO emp = employeeService.convertoEntity(e);
-            employees.add(emp);
+        List<Employee> employees = new ArrayList<>();
+        for(Employee e:cityDTO.getEmployees()){
+            EmployeeDTO emp = employeeService.convertoEmpDTO(e);
+            Employee em=employeeService.convertoEntity(emp);
+            employees.add(em);
         }
 c.setEmployees(cityDTO.getEmployees());
 CityDTO cd=convertoDTO( cityRepository.save(c));

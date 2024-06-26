@@ -4,7 +4,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class EmployeeDTO {
 
 	//@NotNull(message="employee.id.notpresent")
@@ -25,68 +29,5 @@ public class EmployeeDTO {
 	@NotNull(message="employee.salary.notpresent")
 	private Integer salary;
 
-	public EmployeeDTO() {
-		super();
-		
-	}
 
-	
-	public EmployeeDTO(Integer id,
-			 String name,
-			 String company,
-			 Long phoneNo,
-			Integer salary) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.company = company;
-		this.phoneNo = phoneNo;
-		this.salary = salary;
-	}
-
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getCompany() {
-		return company;
-	}
-
-	public void setCompany(String company) {
-		this.company = company;
-	}
-
-	public Long getPhoneNo() {
-		return phoneNo;
-	}
-
-	public void setPhoneNo(Long phoneNo) {
-		this.phoneNo = phoneNo;
-	}
-
-	public Integer getSalary() {
-		return salary;
-	}
-
-	public void setSalary(Integer salary) {
-		this.salary = salary;
-	}
-	
-	
-	
-	
-	
 }

@@ -1,7 +1,7 @@
 package com.emp.repo;
 
 import com.emp.entity.City;
-import com.emp.entity.EmployeeDTO;
+import com.emp.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,6 +16,6 @@ public interface CityRepository extends JpaRepository<City, Integer> {
 
     //@Query("SELECT e from city c inner join employee e on c.id= e.city_id where e.id = :id")
     @Query("SELECT E FROM Employee E where E.city.id = :id")
-    List<EmployeeDTO> getByEmployee(Integer id);
+    List<Employee> getByEmployee(Integer id);
 
 }
