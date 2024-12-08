@@ -13,108 +13,110 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class CityServiceImpl implements CityService{
+public class CityServiceImpl implements CityService {
+
     @Autowired
-    CityRepository cityRepository;
-    
+    private CityRepository cityRepository;
+
     @Autowired
-    EmployeeServiceImpl employeeService;
+    private EmployeeServiceImpl employeeService;
+
     @Override
     public void addCity(CityDTO cityDTO) throws EmployeeException {
         City city = cityRepository.findByCityName(cityDTO.getCityName());
-        if(city!=null){
+        if (city != null) {
             throw new EmployeeException("SERVICE.CITY_EXISTS");
         }
-        if(city==null) {
-            City c = converttoEntity(cityDTO);
-            cityRepository.save(c);
-        }
+        City newCity = convertToEntity(cityDTO);
+        cityRepository.save(newCity);
     }
-
+//What is this get city method
     @Override
     public CityDTO getCity(String name) throws EmployeeException {
         City city = cityRepository.findByCityName(name);
-        if(city==null){
+        if (city == null) {
             throw new EmployeeException("SERVICE.CITY_DOESNT_EXISTS");
         }
-        CityDTO cityDTO = convertoDTO(city);
-        return cityDTO;
+        return convertToDTO(city);
     }
 
     @Override
     public List<CityDTO> getAllCities() throws EmployeeException {
         List<City> cities = cityRepository.findAll();
-        if(cities.isEmpty()){
+        if (cities.isEmpty()) {
             throw new EmployeeException("SERVICE.No_Cities_FOUND");
         }
-        List<CityDTO> cityDTOList = new ArrayList<>();
-        for(City c:cities){
-            CityDTO cs=convertoDTO(c);
-            cityDTOList.add(cs);}
-        return cityDTOList;
+        return cities.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public void deleteCity(String name) throws EmployeeException {
         City city = cityRepository.findByCityName(name);
-        if(city==null){
+        if (city == null) {
             throw new EmployeeException("SERVICE.No_Cities_FOUND");
         }
         cityRepository.delete(city);
     }
 
     @Override
-    public List<com.emp.dto.EmployeeDTO> getByEmployeeByCityId(Integer id) {
-        List<Employee> emps = cityRepository.getByEmployee(id);
-        List<com.emp.dto.EmployeeDTO> employeeDTOList = new ArrayList<>();
-        for(Employee e:emps) {
-            com.emp.dto.EmployeeDTO employeeDTO = employeeService.convertoEmpDTO(e);
-            employeeDTOList.add(employeeDTO);
-        }
-        return employeeDTOList;
+    public List<EmployeeDTO> getByEmployeeByCityId(Integer id) {
+        List<Employee> employees = cityRepository.getByEmployee(id);
+        return employees.stream().map(employeeService::convertoEmpDTO).collect(Collectors.toList());
     }
 
     @Override
     public CityDTO updateCity(CityDTO cityDTO) throws EmployeeException {
-        Optional<City> city = cityRepository.findById(cityDTO.getId());
-        if(city.isEmpty()){
+        Optional<City> cityOpt = cityRepository.findById(cityDTO.getId());
+        if (cityOpt.isEmpty()) {
             throw new EmployeeException("SERVICE.No_Cities_FOUND");
         }
-        City c=city.get();
-c.setCityName(cityDTO.getCityName());
-c.setZipCode(cityDTO.getZipCode());
-c.setState(cityDTO.getState());
+        City city = cityOpt.get();
+        city.setCityName(cityDTO.getCityName());
+        city.setZipCode(cityDTO.getZipCode());
+        city.setState(cityDTO.getState());
 
-        List<Employee> employees = new ArrayList<>();
-        for(Employee e:cityDTO.getEmployees()){
-            EmployeeDTO emp = employeeService.convertoEmpDTO(e);
-            Employee em=employeeService.convertoEntity(emp);
-            employees.add(em);
-        }
-c.setEmployees(cityDTO.getEmployees());
-CityDTO cd=convertoDTO( cityRepository.save(c));
-        return cd;
+        List<Employee> employees = cityDTO.getEmployees().stream()
+                .map(employeeService::convertoEntity)
+                .peek(e -> e.setCity(city))
+                .collect(Collectors.toList());
 
+        city.setEmployees(employees);
+        City updatedCity = cityRepository.save(city);
+        return convertToDTO(updatedCity);
     }
 
-    public CityDTO convertoDTO(City city){
+    private CityDTO convertToDTO(City city) {
         CityDTO cityDTO = new CityDTO();
         cityDTO.setId(city.getId());
         cityDTO.setCityName(city.getCityName());
         cityDTO.setZipCode(city.getZipCode());
         cityDTO.setState(city.getState());
+
+        List<EmployeeDTO> employeeDTOList = city.getEmployees().stream()
+                .map(employeeService::convertoEmpDTO)
+                .collect(Collectors.toList());
+
+        cityDTO.setEmployees(employeeDTOList);
         return cityDTO;
     }
-    public City converttoEntity(CityDTO cityDTO){
+
+    private City convertToEntity(CityDTO cityDTO) {
         City city = new City();
         city.setId(cityDTO.getId());
         city.setCityName(cityDTO.getCityName());
         city.setZipCode(cityDTO.getZipCode());
         city.setState(cityDTO.getState());
+
+        List<Employee> employees = cityDTO.getEmployees().stream()
+                .map(employeeService::convertoEntity)
+                .peek(e -> e.setCity(city))
+                .collect(Collectors.toList());
+
+        city.setEmployees(employees);
         return city;
     }
-
 }
